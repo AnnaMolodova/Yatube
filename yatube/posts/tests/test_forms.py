@@ -1,10 +1,8 @@
 import shutil
 import tempfile
-from urllib import response
 
 from posts.models import Group, Post, User
 from django.conf import settings
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
@@ -64,7 +62,7 @@ class PostCreateFormTest(TestCase):
                 kwargs={'username': self.author.username}
             )
         )
-        self.assertEqual(Post.objects.count(), posts_count+1)
+        self.assertEqual(Post.objects.count(), posts_count + 1)
         self.assertTrue(
             Post.objects.filter(
                 text='текст',
@@ -81,8 +79,7 @@ class PostCreateFormTest(TestCase):
         }
         response = self.authorized_client.post(
              reverse(('posts:post_edit'), kwargs={'post_id': self.post.id}),
-             data=form_data, follow=True
-        )
+             data=form_data, follow=True)
         self.assertRedirects(response, reverse(
             'posts:post_detail',
             args=(1,)
