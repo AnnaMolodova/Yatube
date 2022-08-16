@@ -78,8 +78,10 @@ class PostCreateFormTest(TestCase):
             'group': self.group.id
         }
         response = self.authorized_client.post(
-             reverse(('posts:post_edit'), kwargs={'post_id': self.post.id}),
-             data=form_data, follow=True)
+            reverse(('posts:post_edit'), kwargs={
+                'post_id': self.post.id}),
+            data=form_data, follow=True
+        )
         self.assertRedirects(response, reverse(
             'posts:post_detail',
             args=(1,)
