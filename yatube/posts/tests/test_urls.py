@@ -2,6 +2,7 @@ from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
+from django.urls import reverse
 
 from posts.models import Group, Post
 
@@ -26,6 +27,28 @@ class PostUrlTests(TestCase):
             group=cls.group,
         )
 
+        cls.templates_url_names = {
+            reverse('posts:index'): 'posts/index.html',
+            (reverse(
+                'posts:group_list',
+                kwargs={'slug': cls.group.slug}
+             )): 'posts/group_list.html',
+            (reverse(
+                'posts:post_create'
+                )): 'posts/create_post.html',
+            (reverse(
+                'posts:post_detail', kwargs={'post_id': cls.post.pk}
+             )): 'posts/post_detail.html',
+            (reverse(
+                'posts:post_edit',
+                kwargs={'post_id': cls.post.pk}
+             )): 'posts/create_post.html',
+            (reverse(
+                'posts:profile',
+                kwargs={'username': cls.user.username}
+             )): 'posts/profile.html',
+        }
+
     def setUp(self):
         self.guest_client = Client()
         self.authorized_client = Client()
@@ -33,14 +56,7 @@ class PostUrlTests(TestCase):
 
     def test_urls_uses_correct_template(self):
         """URL адрес использует нужный шаблон."""
-        templates_url_names = {
-            'posts/index.html': '/',
-            'posts/group_list.html': f'/group/{self.group.slug}/',
-            'posts/profile.html': f'/profile/{self.user.username}/',
-            'posts/post_detail.html': f'/posts/{self.post.id}/',
-            'posts/create_post.html': '/create/',
-        }
-        for template, address in templates_url_names.items():
+        for address, template in self.templates_url_names.items():
             with self.subTest(address=address):
                 response = self.authorized_client.get(address)
                 self.assertTemplateUsed(response, template)

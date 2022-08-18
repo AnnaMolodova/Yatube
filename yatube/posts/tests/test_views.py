@@ -26,35 +26,36 @@ class TaskPagesTests(TestCase):
             text='Вот такой текст',
             pub_date='15.12.2001',
         )
+
+        cls.templates_pages_name = {
+             reverse('posts:index'): 'posts/index.html',
+             (reverse(
+                'posts:group_list',
+                kwargs={'slug': cls.group.slug}
+             )): 'posts/group_list.html',
+             (reverse(
+                'posts:post_create'
+                )): 'posts/create_post.html',
+             (reverse(
+                'posts:post_detail', kwargs={'post_id': cls.post.pk}
+             )): 'posts/post_detail.html',
+             (reverse(
+                'posts:post_edit',
+                kwargs={'post_id': cls.post.pk}
+             )): 'posts/create_post.html',
+             (reverse(
+                'posts:profile',
+                kwargs={'username': cls.user.username}
+             )): 'posts/profile.html',
+        }
+
         cls.authorized_client = Client()
         cls.authorized_client.force_login(cls.user)
 
     def test_pages_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
-        templates_pages_name = {
-            reverse('posts:index'): 'posts/index.html',
-            (reverse(
-                'posts:group_list',
-                kwargs={'slug': f'{self.post.group.slug}'}
-            )): 'posts/group_list.html',
-            (reverse(
-                'posts:post_create'
-            )): 'posts/create_post.html',
-            (reverse(
-                'posts:post_detail',
-                kwargs={'post_id': f'{self.post.pk}'}
-            )): 'posts/post_detail.html',
-            (reverse(
-                'posts:post_edit',
-                kwargs={'post_id': f'{self.post.pk}'}
-            )): 'posts/create_post.html',
-            (reverse(
-                'posts:profile',
-                kwargs={'username': f'{self.post.author.username}'}
-            )): 'posts/profile.html',
-        }
-        for reverse_name, template in templates_pages_name.items():
-            with self.subTest(template=template):
+        for reverse_name, template in self.templates_pages_name.items():
+            with self.subTest(reverse_name=reverse_name):
                 response = self.authorized_client.get(reverse_name)
                 self.assertTemplateUsed(response, template)
 
@@ -175,13 +176,18 @@ class PaginatorViewsTest(TestCase):
             slug='test-slug',
             description='Тестовое описание',
         )
+        example_obj = []
         for i in range(0, 13):
-            cls.post = Post.objects.create(
+            cls.post = Post(
                 author=cls.user,
                 group=cls.group,
-                text='Вот такой текст',
+                text=f'{i }Вот такой текст',
                 pub_date='15.12.2001',
             )
+            example_obj.append(cls.post)
+        Post.objects.bulk_create(example_obj)
+        # Созданы объекты bulk_create
+
         cls.authorized_client = Client()
         cls.authorized_client.force_login(cls.user)
 
