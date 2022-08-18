@@ -28,25 +28,25 @@ class TaskPagesTests(TestCase):
         )
 
         cls.templates_pages_name = {
-             reverse('posts:index'): 'posts/index.html',
-             (reverse(
+            reverse('posts:index'): 'posts/index.html',
+            (reverse(
                 'posts:group_list',
                 kwargs={'slug': cls.group.slug}
-             )): 'posts/group_list.html',
-             (reverse(
+            )): 'posts/group_list.html',
+            (reverse(
                 'posts:post_create'
                 )): 'posts/create_post.html',
-             (reverse(
+            (reverse(
                 'posts:post_detail', kwargs={'post_id': cls.post.pk}
-             )): 'posts/post_detail.html',
-             (reverse(
+            )): 'posts/post_detail.html',
+            (reverse(
                 'posts:post_edit',
                 kwargs={'post_id': cls.post.pk}
-             )): 'posts/create_post.html',
-             (reverse(
+            )): 'posts/create_post.html',
+            (reverse(
                 'posts:profile',
                 kwargs={'username': cls.user.username}
-             )): 'posts/profile.html',
+            )): 'posts/profile.html',
         }
 
         cls.authorized_client = Client()
